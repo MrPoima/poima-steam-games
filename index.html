@@ -1,164 +1,268 @@
-from pathlib import Path
-
-html = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Poima — список игр Steam</title>
+  <title>Poima — оффлайн аккаунты Steam</title>
   <style>
     :root {
-      --bg: #0f1117;
-      --card: #171a22;
-      --card2: #1f2330;
-      --text: #f4f4f5;
-      --muted: #a1a1aa;
-      --line: #2a2f3d;
+      --bg: #161616;
+      --panel: #1f1f1f;
+      --panel2: #252525;
+      --text: #f5f5f5;
+      --muted: #a8a8a8;
+      --line: #333333;
+      --accent: #ffffff;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: radial-gradient(circle at top, #202434 0, #0f1117 42%);
+      background: #161616;
       color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
     }
-    .wrap {
-      max-width: 980px;
+    .page {
+      max-width: 900px;
       margin: 0 auto;
-      padding: 34px 18px 60px;
+      padding: 28px 16px 60px;
     }
-    .profile {
+    .brand {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 28px;
+      gap: 12px;
+      margin-bottom: 24px;
     }
     .avatar {
-      width: 54px;
-      height: 54px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #ffffff, #2d2d2d);
-      color: #111;
       display: grid;
       place-items: center;
+      background: linear-gradient(135deg, #fff, #303030);
+      color: #111;
       font-weight: 900;
-      font-size: 22px;
-      border: 2px solid #fff;
+      border: 2px solid #eee;
+      box-shadow: 0 0 28px rgba(255,255,255,.12);
     }
-    .name { font-size: 21px; font-weight: 800; line-height: 1.1; }
-    .tag { color: var(--muted); margin-top: 4px; font-size: 14px; }
+    .brand-name { font-size: 21px; font-weight: 900; }
+    .brand-tag { color: var(--muted); font-size: 13px; margin-top: 3px; }
     h1 {
-      font-size: clamp(32px, 6vw, 58px);
-      line-height: 1;
-      margin: 18px 0 18px;
-      letter-spacing: -1.5px;
+      font-size: clamp(36px, 7vw, 62px);
+      line-height: .95;
+      margin: 0 0 20px;
+      letter-spacing: -1.4px;
     }
-    .lead {
-      color: #e6e6e9;
-      font-size: 17px;
+    .desc {
+      font-size: 16px;
       line-height: 1.55;
-      max-width: 840px;
-      margin-bottom: 22px;
+      max-width: 790px;
+      color: #e7e7e7;
+      margin-bottom: 16px;
     }
-    .warning {
-      background: rgba(255,255,255,0.06);
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 22px;
+    }
+    .btn {
+      color: #111;
+      background: #fff;
+      padding: 11px 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .btn.secondary {
+      color: #fff;
+      background: #242424;
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 16px 18px;
-      color: #eeeeef;
-      line-height: 1.55;
-      margin: 22px 0 26px;
     }
+    .notice {
+      background: #222;
+      border: 1px solid #363636;
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: #f1f1f1;
+      line-height: 1.5;
+      margin: 0 0 18px;
+    }
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 0 0 16px;
+    }
+    .stat {
+      background: #202020;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 13px;
+      color: #e8e8e8;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .stat span { color: var(--muted); font-weight: 700; }
     .search {
       width: 100%;
-      padding: 17px 18px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: #181b24;
+      height: 48px;
+      background: #242424;
+      border: 1px solid #444;
+      border-radius: 10px;
       color: var(--text);
-      font-size: 16px;
+      padding: 0 15px;
       outline: none;
-      margin: 12px 0 24px;
+      font-size: 15px;
+      margin-bottom: 14px;
     }
-    .search:focus { border-color: #ffffff99; }
-    .section {
-      margin: 34px 0 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 23px;
-      font-weight: 800;
-      letter-spacing: .3px;
+    .search:focus { border-color: rgba(255,255,255,.75); }
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 15px;
+      line-height: 1.45;
     }
-    .section span { color: var(--muted); font-size: 15px; font-weight: 600; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
-      gap: 14px;
+    .list {
+      background: #1a1a1a;
+      border: 1px solid #303030;
+      border-radius: 14px;
+      overflow: hidden;
     }
     .game {
-      background: linear-gradient(180deg, var(--card2), var(--card));
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      min-height: 92px;
-      display: flex;
-      gap: 13px;
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 14px;
       align-items: center;
-      transition: transform .15s ease, border-color .15s ease;
+      min-height: 88px;
+      padding: 12px;
+      border-bottom: 1px solid #2e2e2e;
+      transition: background .12s ease;
     }
-    .game:hover { transform: translateY(-2px); border-color: #ffffff73; }
+    .game:hover { background: #232323; }
+    .game:last-child { border-bottom: none; }
     .cover {
-      width: 64px;
-      height: 64px;
-      border-radius: 12px;
-      background: #2a2f3d;
+      width: 150px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #2b2b2b;
+      border: 1px solid #3a3a3a;
+      display: block;
+    }
+    .fallback {
+      width: 150px;
+      height: 70px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #303030, #1b1b1b);
+      border: 1px solid #3a3a3a;
       display: grid;
       place-items: center;
-      font-weight: 900;
       color: #fff;
-      flex: 0 0 64px;
-      border: 1px solid #ffffff24;
-      text-align: center;
-      font-size: 18px;
+      font-weight: 900;
+      font-size: 20px;
     }
-    .game-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
-    .meta { color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .title {
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.23;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #fff;
+      color: #111;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .badge.gray {
+      background: #303030;
+      color: #dedede;
+      border: 1px solid #454545;
+    }
+    .meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .appid {
+      margin-top: 4px;
+      color: #777;
+      font-size: 12px;
+    }
+    .empty {
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+    }
     .footer {
       color: var(--muted);
-      margin-top: 36px;
-      border-top: 1px solid var(--line);
-      padding-top: 18px;
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.5;
+      margin-top: 24px;
+      border-top: 1px solid var(--line);
+      padding-top: 17px;
+    }
+    @media (max-width: 560px) {
+      .game {
+        grid-template-columns: 112px 1fr;
+        gap: 11px;
+        padding: 11px;
+      }
+      .cover, .fallback {
+        width: 112px;
+        height: 53px;
+      }
+      .title { font-size: 14px; }
     }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <div class="profile">
+  <main class="page">
+    <div class="brand">
       <div class="avatar">P</div>
       <div>
-        <div class="name">Poima</div>
-        <div class="tag">@poima · Steam Offline</div>
+        <div class="brand-name">Poima</div>
+        <div class="brand-tag">@poima · Steam Offline</div>
       </div>
     </div>
 
-    <h1>Список игр на аккаунте</h1>
+    <h1>Оффлайн аккаунты</h1>
 
-    <p class="lead">
-      Здесь указан список основных игр на Steam-аккаунте. Перед покупкой конкретного лота ориентируйтесь на описание товара.
-      Если сомневаетесь в наличии нужной игры — напишите в чат заказа.
+    <p class="desc">
+      Список игр на Steam-аккаунте. Сначала показаны самые сильные игры, ниже — остальная библиотека.
+      Перед покупкой конкретного лота ориентируйтесь на описание товара.
     </p>
 
-    <div class="warning">
-      <b>Важно:</b> не все игры подходят для оффлайн-активации. Онлайн-режим, мультиплеер и облачные сохранения не гарантируются.
-      Покупатель получает доступ только для запуска игры по инструкции.
+    <div class="links">
+      <a class="btn" href="https://funpay.com/users/15529537/" target="_blank" rel="noopener">FunPay продавца</a>
+      <a class="btn secondary" href="https://teletype.in/@poima/__Jjhzuj7o4" target="_blank" rel="noopener">Инструкция</a>
     </div>
 
-    <input id="search" class="search" placeholder="Поиск по названию игры..." />
+    <div class="notice">
+      <b>Важно:</b> не все игры подходят для оффлайн-активации. Онлайн-режим, мультиплеер, облачные сохранения и облачный гейминг не гарантируются.
+      Доступ выдаётся только для запуска игры по инструкции.
+    </div>
 
-    <div id="list"></div>
+    <div class="stats">
+      <div class="stat">Игр в списке: <span id="countAll"></span></div>
+      <div class="stat">Топ игр сверху: <span id="countTop"></span></div>
+    </div>
+
+    <input id="search" class="search" placeholder="Search by name or AppID..." />
+    <p class="hint">Можно искать по названию игры или AppID. Обложки подтягиваются из Steam там, где указан AppID.</p>
+
+    <div id="list" class="list"></div>
 
     <div class="footer">
       🖤 Poima · Steam Offline<br>
@@ -167,99 +271,243 @@ html = """<!DOCTYPE html>
   </main>
 
   <script>
-    const categories = [
-      {
-        name: "MAFIA",
-        games: [
-          "Mafia",
-          "Mafia: Definitive Edition",
-          "Mafia II Classic",
-          "Mafia II: Definitive Edition",
-          "Mafia III: Definitive Edition"
-        ]
-      },
-      {
-        name: "METRO",
-        games: [
-          "Metro 2033 Redux",
-          "Metro Exodus",
-          "Metro: Last Light Redux"
-        ]
-      },
-      {
-        name: "CRYSIS",
-        games: [
-          "Crysis Remastered",
-          "Crysis 2 Remastered",
-          "Crysis 3 Remastered"
-        ]
-      },
-      {
-        name: "ТОП ИГРЫ",
-        games: [
-          "The Witcher 3: Wild Hunt",
-          "Atomic Heart",
-          "BeamNG.drive",
-          "Control Ultimate Edition",
-          "Days Gone",
-          "Detroit: Become Human",
-          "Dying Light",
-          "Mortal Kombat 11",
-          "The Elder Scrolls V: Skyrim Special Edition",
-          "The Forest",
-          "Tomb Raider",
-          "Outlast 2",
-          "The Callisto Protocol",
-          "Tiny Bunny"
-        ]
-      }
+    const games = [
+      { title: 'The Witcher 3: Wild Hunt', appid: 292030, top: true },
+      { title: 'Atomic Heart', appid: 668580, top: true },
+      { title: 'BeamNG.drive', appid: 284160, top: true },
+      { title: 'Control Ultimate Edition', appid: 870780, top: true },
+      { title: 'Crysis Remastered', appid: 1715130, top: true },
+      { title: 'Crysis 2 Remastered', appid: 2096600, top: true },
+      { title: 'Crysis 3 Remastered', appid: 2096610, top: true },
+      { title: 'Days Gone', appid: 1259420, top: true },
+      { title: 'Detroit: Become Human', appid: 1222140, top: true },
+      { title: 'Dying Light', appid: 239140, top: true },
+      { title: 'Mafia', appid: 40990, top: true },
+      { title: 'Mafia: Definitive Edition', appid: 1030840, top: true },
+      { title: 'Mafia II Classic', appid: 50130, top: true },
+      { title: 'Mafia II: Definitive Edition', appid: 1030830, top: true },
+      { title: 'Mafia III: Definitive Edition', appid: 360430, top: true },
+      { title: 'Manor Lords', appid: 1363080, top: true },
+      { title: 'Metro 2033', appid: 43110, top: true },
+      { title: 'Metro Exodus', appid: 412020, top: true },
+      { title: 'Metro: Last Light Complete Edition', appid: 43160, top: true },
+      { title: 'Mortal Kombat 11', appid: 976310, top: true },
+      { title: 'Outlast 2', appid: 414700, top: true },
+      { title: 'The Callisto Protocol', appid: 1544020, top: true },
+      { title: 'The Elder Scrolls V: Skyrim Special Edition', appid: 489830, top: true },
+      { title: 'The Forest', appid: 242760, top: true },
+      { title: 'Tiny Bunny', appid: 1421250, top: true },
+      { title: 'Tomb Raider', appid: 203160, top: true },
+      { title: '8AM', appid: null, top: false },
+      { title: '911 Operator', appid: 503560, top: false },
+      { title: 'Отряд самоубийц: Конец Лиги справедливости', appid: 315210, top: false },
+      { title: 'Партизаны 1941', appid: 1227530, top: false },
+      { title: 'РУСЫ ПРОТИВ ЯЩЕРОВ', appid: null, top: false },
+      { title: 'Aeonic', appid: null, top: false },
+      { title: 'Alan Wake', appid: 108710, top: false },
+      { title: "Alan Wake's American Nightmare", appid: 202750, top: false },
+      { title: 'Along the Edge', appid: 504390, top: false },
+      { title: 'Amnesia: The Bunker', appid: 1944430, top: false },
+      { title: 'ARK: Survival Evolved', appid: 346110, top: false },
+      { title: 'ARK: Survival Of The Fittest', appid: 407530, top: false },
+      { title: 'Artifact Foundry', appid: null, top: false },
+      { title: 'Assetto Corsa', appid: 244210, top: false },
+      { title: 'Away', appid: null, top: false },
+      { title: 'AX:EL', appid: null, top: false },
+      { title: 'BattleBlock Theater', appid: 238460, top: false },
+      { title: 'Beholder', appid: 475550, top: false },
+      { title: 'Beholder 2', appid: 761620, top: false },
+      { title: 'Beyond: Two Souls', appid: 960990, top: false },
+      { title: 'Black Desert (Retired)', appid: 582660, top: false },
+      { title: 'Borderlands 2', appid: 49520, top: false },
+      { title: 'Buckshot Roulette', appid: 2835570, top: false },
+      { title: 'Bunny Guys!', appid: null, top: false },
+      { title: 'Bunny Hurling', appid: null, top: false },
+      { title: 'Capcom Arcade Stadium', appid: 1515950, top: false },
+      { title: 'Castle Crashers', appid: 204360, top: false },
+      { title: 'Caveman World: Mountains of Unga Boonga', appid: null, top: false },
+      { title: 'Chamber Survival', appid: null, top: false },
+      { title: 'Company of Heroes 2', appid: 231430, top: false },
+      { title: 'Counter-Strike', appid: 10, top: false },
+      { title: 'Counter-Strike: Condition Zero', appid: 80, top: false },
+      { title: 'Counter-Strike: Condition Zero Deleted Scenes', appid: 100, top: false },
+      { title: 'Cursedland', appid: null, top: false },
+      { title: 'Dead Island Retro Revenge', appid: 337360, top: false },
+      { title: 'Deponia', appid: 214340, top: false },
+      { title: 'Depths Of Horror: Mushroom Day', appid: null, top: false },
+      { title: 'Dino running from a FURRY: GAME', appid: null, top: false },
+      { title: 'Dishonored', appid: 205100, top: false },
+      { title: 'Dishonored 2', appid: 403640, top: false },
+      { title: "Don't Starve Together", appid: 322330, top: false },
+      { title: 'Drift86', appid: 1392740, top: false },
+      { title: 'Drones, The Human Condition', appid: null, top: false },
+      { title: 'Dying Light: Bad Blood', appid: 766370, top: false },
+      { title: 'F.E.A.R.', appid: 21090, top: false },
+      { title: 'F.E.A.R.: Extraction Point', appid: 21110, top: false },
+      { title: 'F.E.A.R.: Perseus Mandate', appid: 21120, top: false },
+      { title: 'F.E.A.R. 2: Project Origin', appid: 16450, top: false },
+      { title: 'F.E.A.R. 3', appid: 21100, top: false },
+      { title: 'Figment', appid: 493540, top: false },
+      { title: 'Frostpunk', appid: 323190, top: false },
+      { title: 'Getting Over It with Bennett Foddy', appid: 240720, top: false },
+      { title: 'Golf Galore', appid: null, top: false },
+      { title: 'Graveyard Keeper', appid: 599140, top: false },
+      { title: "Happy's Humble Burger Farm", appid: 1433340, top: false },
+      { title: 'Hatred', appid: 341940, top: false },
+      { title: 'Heart Of Squid', appid: null, top: false },
+      { title: 'Heavy Rain', appid: 960910, top: false },
+      { title: 'House of Detention', appid: null, top: false },
+      { title: 'Icarus', appid: 1149460, top: false },
+      { title: 'Initial Drift Online', appid: null, top: false },
+      { title: 'Injustice: Gods Among Us Ultimate Edition', appid: 242700, top: false },
+      { title: 'IQ Under Construction', appid: null, top: false },
+      { title: 'Iron Sky Invasion', appid: 224900, top: false },
+      { title: 'Jagged Alliance Gold', appid: 1620, top: false },
+      { title: 'Just Ignore Them', appid: 561770, top: false },
+      { title: 'Just Move Fall Dungeon Endless Abo', appid: null, top: false },
+      { title: 'Just Move: Clean City Messy Battle', appid: null, top: false },
+      { title: 'Left 4 Dead 2', appid: 550, top: false },
+      { title: 'Legend of Keepers', appid: 978520, top: false },
+      { title: 'Lethal Company', appid: 1966720, top: false },
+      { title: 'Life is Strange 2', appid: 532210, top: false },
+      { title: 'LivingBattle', appid: null, top: false },
+      { title: 'LivingForest', appid: null, top: false },
+      { title: 'Mazzle', appid: null, top: false },
+      { title: 'Metel - Horror Escape', appid: 1045130, top: false },
+      { title: 'Moonrise Fall', appid: 1035110, top: false },
+      { title: 'Mortal Kombat X', appid: 307780, top: false },
+      { title: 'Narvas', appid: null, top: false },
+      { title: 'Need for Drive — Multiplayer', appid: null, top: false },
+      { title: 'NineHells', appid: null, top: false },
+      { title: 'Nocturnal', appid: 1634080, top: false },
+      { title: 'Nuclear Nightmare', appid: null, top: false },
+      { title: 'Odysseus Kosmos and his Robot Quest', appid: 769920, top: false },
+      { title: 'One Gun Guy', appid: null, top: false },
+      { title: 'Oxygen Not Included', appid: 457140, top: false },
+      { title: 'Penumbra: Necrologue', appid: 346290, top: false },
+      { title: 'People Playground', appid: 1118200, top: false },
+      { title: 'Pet Lands', appid: null, top: false },
+      { title: 'Phasmophobia', appid: 739630, top: false },
+      { title: 'PINK ELEPHANT', appid: null, top: false },
+      { title: 'Police Shootout', appid: 1279240, top: false },
+      { title: 'POPGOES Arcade', appid: 1986840, top: false },
+      { title: 'POSTAL', appid: 232770, top: false },
+      { title: 'POSTAL 2', appid: 223470, top: false },
+      { title: 'Puzzle Chambers', appid: null, top: false },
+      { title: 'Quiplash', appid: 351510, top: false },
+      { title: 'RACE 07: Andy Priaulx Crowne Plaza Raceway', appid: 8600, top: false },
+      { title: 'Raft', appid: 648800, top: false },
+      { title: 'Ranch Simulator', appid: 1119730, top: false },
+      { title: 'Red Wings', appid: null, top: false },
+      { title: 'Remnant: From the Ashes', appid: 617290, top: false },
+      { title: 'Remothered: Tormented Fathers', appid: 633360, top: false },
+      { title: 'RimWorld', appid: 294100, top: false },
+      { title: 'Save the settlers', appid: null, top: false },
+      { title: "Sentience: The Android's Tale", appid: null, top: false },
+      { title: 'Serena', appid: 272060, top: false },
+      { title: 'Ship Graveyard Simulator', appid: 1286880, top: false },
+      { title: 'Sniper Ghost Warrior 3', appid: 368070, top: false },
+      { title: 'Space Crew: Legendary Edition', appid: 1176710, top: false },
+      { title: 'Starbound', appid: 211820, top: false },
+      { title: 'Starbound - Unstable', appid: 367540, top: false },
+      { title: 'SteamWorld Dig', appid: 252410, top: false },
+      { title: 'SteamWorld Dig 2', appid: 571310, top: false },
+      { title: 'Steelrising', appid: 1283400, top: false },
+      { title: 'Stickman Killing Zombie', appid: null, top: false },
+      { title: 'Styx: Master of Shadows', appid: 242640, top: false },
+      { title: 'Styx: Shards of Darkness', appid: 355790, top: false },
+      { title: 'Surgeon Simulator', appid: 233720, top: false },
+      { title: 'SurrounDead Poly Construction', appid: null, top: false },
+      { title: 'Syberia', appid: 46500, top: false },
+      { title: 'Syberia 2', appid: 46510, top: false },
+      { title: 'TEKKEN 7', appid: 389730, top: false },
+      { title: 'Terraria', appid: 105600, top: false },
+      { title: 'Terrors to Unveil - Day Off', appid: null, top: false },
+      { title: 'The Archotek Project', appid: null, top: false },
+      { title: 'The Descendant', appid: 351940, top: false },
+      { title: 'The Gunk', appid: 1087760, top: false },
+      { title: 'The Long Dark', appid: 305620, top: false },
+      { title: 'The Red Lantern', appid: 1053710, top: false },
+      { title: 'The Walking Dead: The Telltale Definitive Series', appid: 1449690, top: false },
+      { title: 'Thief Simulator', appid: 704850, top: false },
+      { title: 'This War of Mine', appid: 282070, top: false },
+      { title: 'Titan Quest Anniversary Edition', appid: 475150, top: false },
+      { title: 'Train Sim World 6', appid: null, top: false },
+      { title: 'Uncanny Tales: Cold Road', appid: null, top: false },
+      { title: 'Undertale', appid: 391540, top: false },
+      { title: 'Warhammer 40,000: Gladius - Relics of War', appid: 489630, top: false },
+      { title: 'Warhammer Underworlds - Shadespire Edition', appid: 1022310, top: false },
+      { title: 'Warhammer: Vermintide 2', appid: 552500, top: false },
+      { title: 'Watchmen: The End Is Nigh', appid: 21010, top: false },
+      { title: 'Watchmen: The End Is Nigh Part 2', appid: 21030, top: false },
+      { title: 'Wednesdays', appid: null, top: false },
+      { title: 'Wild Terra 2: New Lands', appid: 1134700, top: false },
+      { title: 'Winexy', appid: null, top: false },
+      { title: 'World Crafter TD', appid: null, top: false },
+      { title: 'Zup! F', appid: 601220, top: false }
     ];
 
+    const list = document.getElementById("list");
+    const search = document.getElementById("search");
+
+    document.getElementById("countAll").textContent = games.length;
+    document.getElementById("countTop").textContent = games.filter(g => g.top).length;
+
+    function coverUrl(appid) {
+      return `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`;
+    }
+
     function initials(title) {
-      return title.split(/[\\s:]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+      return title
+        .replace(/[^a-zA-Zа-яА-Я0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(w => w[0])
+        .join("")
+        .toUpperCase();
     }
 
     function render(query = "") {
-      const root = document.getElementById("list");
-      root.innerHTML = "";
       const q = query.trim().toLowerCase();
+      const filtered = games.filter(g =>
+        g.title.toLowerCase().includes(q) || (g.appid && String(g.appid).includes(q))
+      );
 
-      categories.forEach(cat => {
-        const games = cat.games.filter(g => g.toLowerCase().includes(q));
-        if (!games.length) return;
+      list.innerHTML = "";
 
-        const section = document.createElement("div");
-        section.className = "section";
-        section.innerHTML = `${cat.name} <span>${games.length}</span>`;
-        root.appendChild(section);
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty">Ничего не найдено</div>';
+        return;
+      }
 
-        const grid = document.createElement("div");
-        grid.className = "grid";
+      filtered.forEach(g => {
+        const item = document.createElement("div");
+        item.className = "game";
 
-        games.forEach(title => {
-          const card = document.createElement("div");
-          card.className = "game";
-          card.innerHTML = `
-            <div class="cover">${initials(title)}</div>
-            <div>
-              <div class="game-title">${title}</div>
-              <div class="meta">Steam · Offline access</div>
+        const imageBlock = g.appid
+          ? `<img class="cover" src="${coverUrl(g.appid)}" alt="${g.title}" loading="lazy"
+                onerror="this.outerHTML='<div class=\'fallback\'>${initials(g.title)}</div>'">`
+          : `<div class="fallback">${initials(g.title)}</div>`;
+
+        item.innerHTML = `
+          ${imageBlock}
+          <div>
+            <div class="title-row">
+              <div class="title">${g.title}</div>
+              ${g.top ? '<span class="badge">top</span>' : '<span class="badge gray">library</span>'}
             </div>
-          `;
-          grid.appendChild(card);
-        });
+            <div class="meta">Steam · Оффлайн-доступ по инструкции</div>
+            <div class="appid">${g.appid ? 'AppID: ' + g.appid : 'AppID не указан'}</div>
+          </div>
+        `;
 
-        root.appendChild(grid);
+        list.appendChild(item);
       });
     }
 
-    document.getElementById("search").addEventListener("input", e => render(e.target.value));
+    search.addEventListener("input", e => render(e.target.value));
     render();
   </script>
 </body>
 </html>
-"""
-
-path = Path("/mnt/data/index.html")
-path.write_text(html, encoding="utf-8")
-print("created", path)
