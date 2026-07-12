@@ -240,12 +240,11 @@
     <h1>Оффлайн аккаунты</h1>
 
     <p class="desc">
-      Список игр на Steam-аккаунте. Сначала показаны самые сильные игры, ниже — остальная библиотека.
-      Перед покупкой конкретного лота ориентируйтесь на описание товара.
+      Список игр на Steam-аккаунте. Перед покупкой конкретного лота ориентируйтесь на описание товара.
     </p>
 
     <div class="links">
-      <a class="btn" href="https://funpay.com/users/15529537/" target="_blank" rel="noopener">FunPay продавца</a>
+      <a class="btn" href="https://funpay.com/users/5601124/" target="_blank" rel="noopener">FunPay продавца</a>
       <a class="btn secondary" href="https://teletype.in/@poima/__Jjhzuj7o4" target="_blank" rel="noopener">Инструкция</a>
     </div>
 
@@ -256,7 +255,7 @@
 
     <div class="stats">
       <div class="stat">Игр в списке: <span id="countAll"></span></div>
-      <div class="stat">Топ игр сверху: <span id="countTop"></span></div>
+      <div class="stat">Игры Steam · Offline</div>
     </div>
 
     <input id="search" class="search" placeholder="Search by name or AppID..." />
@@ -272,32 +271,32 @@
 
   <script>
     const games = [
-      { title: 'The Witcher 3: Wild Hunt', appid: 292030, top: true },
-      { title: 'Atomic Heart', appid: 668580, top: true },
-      { title: 'BeamNG.drive', appid: 284160, top: true },
-      { title: 'Control Ultimate Edition', appid: 870780, top: true },
-      { title: 'Crysis Remastered', appid: 1715130, top: true },
-      { title: 'Crysis 2 Remastered', appid: 2096600, top: true },
-      { title: 'Crysis 3 Remastered', appid: 2096610, top: true },
-      { title: 'Days Gone', appid: 1259420, top: true },
-      { title: 'Detroit: Become Human', appid: 1222140, top: true },
-      { title: 'Dying Light', appid: 239140, top: true },
-      { title: 'Mafia', appid: 40990, top: true },
-      { title: 'Mafia: Definitive Edition', appid: 1030840, top: true },
-      { title: 'Mafia II Classic', appid: 50130, top: true },
-      { title: 'Mafia II: Definitive Edition', appid: 1030830, top: true },
-      { title: 'Mafia III: Definitive Edition', appid: 360430, top: true },
-      { title: 'Manor Lords', appid: 1363080, top: true },
-      { title: 'Metro 2033', appid: 43110, top: true },
-      { title: 'Metro Exodus', appid: 412020, top: true },
-      { title: 'Metro: Last Light Complete Edition', appid: 43160, top: true },
-      { title: 'Mortal Kombat 11', appid: 976310, top: true },
-      { title: 'Outlast 2', appid: 414700, top: true },
-      { title: 'The Callisto Protocol', appid: 1544020, top: true },
-      { title: 'The Elder Scrolls V: Skyrim Special Edition', appid: 489830, top: true },
-      { title: 'The Forest', appid: 242760, top: true },
-      { title: 'Tiny Bunny', appid: 1421250, top: true },
-      { title: 'Tomb Raider', appid: 203160, top: true },
+      { title: 'The Witcher 3: Wild Hunt', appid: 292030, top: false },
+      { title: 'Atomic Heart', appid: 668580, top: false },
+      { title: 'BeamNG.drive', appid: 284160, top: false },
+      { title: 'Control Ultimate Edition', appid: 870780, top: false },
+      { title: 'Crysis Remastered', appid: 1715130, top: false },
+      { title: 'Crysis 2 Remastered', appid: 2096600, top: false },
+      { title: 'Crysis 3 Remastered', appid: 2096610, top: false },
+      { title: 'Days Gone', appid: 1259420, top: false },
+      { title: 'Detroit: Become Human', appid: 1222140, top: false },
+      { title: 'Dying Light', appid: 239140, top: false },
+      { title: 'Mafia', appid: 40990, top: false },
+      { title: 'Mafia: Definitive Edition', appid: 1030840, top: false },
+      { title: 'Mafia II Classic', appid: 50130, top: false },
+      { title: 'Mafia II: Definitive Edition', appid: 1030830, top: false },
+      { title: 'Mafia III: Definitive Edition', appid: 360430, top: false },
+      { title: 'Manor Lords', appid: 1363080, top: false },
+      { title: 'Metro 2033', appid: 43110, top: false },
+      { title: 'Metro Exodus', appid: 412020, top: false },
+      { title: 'Metro: Last Light Complete Edition', appid: 43160, top: false },
+      { title: 'Mortal Kombat 11', appid: 976310, top: false },
+      { title: 'Outlast 2', appid: 414700, top: false },
+      { title: 'The Callisto Protocol', appid: 1544020, top: false },
+      { title: 'The Elder Scrolls V: Skyrim Special Edition', appid: 489830, top: false },
+      { title: 'The Forest', appid: 242760, top: false },
+      { title: 'Tiny Bunny', appid: 1421250, top: false },
+      { title: 'Tomb Raider', appid: 203160, top: false },
       { title: '8AM', appid: null, top: false },
       { title: '911 Operator', appid: 503560, top: false },
       { title: 'Отряд самоубийц: Конец Лиги справедливости', appid: 315210, top: false },
@@ -451,7 +450,6 @@
     const search = document.getElementById("search");
 
     document.getElementById("countAll").textContent = games.length;
-    document.getElementById("countTop").textContent = games.filter(g => g.top).length;
 
     function coverUrl(appid) {
       return `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`;
@@ -495,7 +493,7 @@
           <div>
             <div class="title-row">
               <div class="title">${g.title}</div>
-              ${g.top ? '<span class="badge">top</span>' : '<span class="badge gray">library</span>'}
+              <span class="badge gray">steam</span>
             </div>
             <div class="meta">Steam · Оффлайн-доступ по инструкции</div>
             <div class="appid">${g.appid ? 'AppID: ' + g.appid : 'AppID не указан'}</div>
